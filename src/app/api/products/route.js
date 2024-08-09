@@ -18,7 +18,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Error al crear el empleado:", error);
     return NextResponse.json(
-      { error: "Hubo un problema al crear el empleado desde la API", details: error.message },
+      { error: "Hubo un problema al crear el empleado desde la API.", details: error.message },
       { status: 500 }
     );
   }
