@@ -1,0 +1,97 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model employ {
+  id        Int      @id @default(autoincrement())
+  cedula    String   @unique 
+  nombre    String   
+  apellido  String 
+  telefono  String      
+  createdAt DateTime @default(now())
+  trabajos  Trabajo[]
+  vales     Vale[]
+  consumos  Consumo[]
+  facturas  Factura[]
+}
+
+model Product {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  cantidad  Int
+  precio    Int
+  consumos  Consumo[]
+}
+
+model Trabajo {
+  id          Int        @id @default(autoincrement())
+  titulo      String
+  descripcion String
+  precio      Int
+  estado      String
+  empleado    employ     @relation(fields: [empleadoId], references: [id])
+  empleadoId  Int
+  factura     Factura?   @relation(fields: [facturaId], references: [id])
+  facturaId   Int?
+  createdAt   DateTime   @default(now())
+}
+
+model Vale {
+  id          Int        @id @default(autoincrement())
+  cantidad    Int
+  descripcion String
+  estado      String
+  empleado    employ     @relation(fields: [empleadoId], references: [id])
+  empleadoId  Int
+  factura     Factura?   @relation(fields: [facturaId], references: [id])
+  facturaId   Int?
+  createdAt   DateTime   @default(now())
+}
+
+model Consumo {
+  id          Int        @id @default(autoincrement())
+  cantidad    Int
+  producto    Product    @relation(fields: [productoId], references: [id])
+  productoId  Int
+  estado      String
+  empleado    employ     @relation(fields: [empleadoId], references: [id])
+  empleadoId  Int
+  factura     Factura?   @relation(fields: [facturaId], references: [id])
+  facturaId   Int?
+  createdAt   DateTime   @default(now())
+}
+
+model Factura {
+  id          Int        @id @default(autoincrement())
+  empleado    employ     @relation(fields: [empleadoId], references: [id])
+  empleadoId  Int
+  trabajos    Trabajo[]
+  vales       Vale[]
+  consumos    Consumo[]
+  total       Int
+  createdAt   DateTime   @default(now())
+  registros   Registro[] @relation("FacturaRegistros")
+}
+
+model Registro {
+  id          Int        @id @default(autoincrement())
+  facturaId   Int
+  factura     Factura    @relation("FacturaRegistros", fields: [facturaId], references: [id])
+  descripcion String
+  monto       Int
+}
