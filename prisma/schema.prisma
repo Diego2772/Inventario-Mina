@@ -43,7 +43,7 @@ model Trabajo {
   titulo      String
   descripcion String
   precio      Int
-  estado      String
+  estado      String     @default("false")
   empleado    employ     @relation(fields: [empleadoId], references: [id])
   empleadoId  Int
   factura     Factura?   @relation(fields: [facturaId], references: [id])
@@ -55,7 +55,7 @@ model Vale {
   id          Int        @id @default(autoincrement())
   cantidad    Int
   descripcion String
-  estado      String
+  estado      String     @default("false")
   empleado    employ     @relation(fields: [empleadoId], references: [id])
   empleadoId  Int
   factura     Factura?   @relation(fields: [facturaId], references: [id])
@@ -64,7 +64,7 @@ model Vale {
 }
 
 model Consumo {
-  id          Int        @id @default(autoincrement())
+  id          Int        @id @default(autoincrement()) 
   cantidad    Int
   producto    Product    @relation(fields: [productoId], references: [id])
   productoId  Int

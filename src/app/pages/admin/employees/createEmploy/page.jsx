@@ -40,6 +40,7 @@ export default function CreateEmployee() {
       }
 
       const data = await res.json();
+      
       console.log(data);
       setSuccess('Empleado creado exitosamente');
       setForm({
