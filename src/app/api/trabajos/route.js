@@ -1,29 +1,40 @@
-// /pages/api/trabajos/create.js
+import { NextResponse } from "next/server";
 import prisma from '../../../lib/prisma';
 
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const { titulo, descripcion, precio, empleadoId, facturaId } = req.body;
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { titulo, descripcion, precio, estado = "false", empleadoId, facturaId = null } = body;
 
-    try {
-      const newTrabajo = await prisma.trabajo.create({
-        data: {
-          titulo,
-          descripcion,
-          precio: parseInt(precio, 10),
-          estado: "false", // Set estado as "false" by default
-          empleado: {
-            connect: { id: parseInt(empleadoId, 10) },
-          },
-          factura: facturaId ? { connect: { id: parseInt(facturaId, 10) } } : undefined,
+    const newTrabajo = await prisma.trabajo.create({
+      data: {
+        titulo,
+        descripcion,
+        precio,
+        estado,
+        empleado: {
+          connect: { id: empleadoId }
         },
-      });
-      res.status(201).json(newTrabajo);
-    } catch (error) {
-      console.error("Error creando el trabajo: ", error);
-      res.status(500).json({ error: 'Error creando el trabajo' });
-    }
-  } else {
-    res.status(405).json({ error: 'Método no permitido' });
+        factura: facturaId ? { connect: { id: facturaId } } : undefined
+      },
+    });
+
+    return NextResponse.json(newTrabajo);
+  } catch (error) {
+    console.error("Error al crear el trabajo:", error);
+    return NextResponse.json(
+      { error: "Hubo un problema al crear el trabajo desde la API.", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const trabajos = await prisma.trabajo.findMany();
+    return NextResponse.json(trabajos);
+  } catch (error) {
+    console.error('Error al obtener los trabajos:', error);
+    return NextResponse.json({ error: 'Hubo un problema al obtener los trabajos' }, { status: 500 });
   }
 }

@@ -38,16 +38,3 @@ export async function GET() {
   }
 }
 
-export async function DELETE(request, { params }) {
-  const { id } = params;
-
-  try {
-    await prisma.vale.delete({
-      where: { id: parseInt(id) },
-    });
-    return NextResponse.json({ message: 'Vale eliminado exitosamente' });
-  } catch (error) {
-    console.error('Error al eliminar el vale:', error);
-    return NextResponse.json({ error: 'Hubo un problema al eliminar el vale' }, { status: 500 });
-  }
-}
