@@ -1,18 +1,17 @@
-// /pages/vales/index.js
-"use client"
+"use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ValesList() {
   const [vales, setVales] = useState([]);
   const [empleados, setEmpleados] = useState([]);
+  const [search, setSearch] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    // Obtener la lista de vales y empleados al cargar la página
     const fetchVales = async () => {
       try {
-        const response = await fetch('/api/vales');
+        const response = await fetch(`/api/vales?nombre=${search}`);
         const data = await response.json();
         setVales(data);
       } catch (error) {
@@ -32,15 +31,13 @@ export default function ValesList() {
 
     fetchVales();
     fetchEmpleados();
-  }, []);
+  }, [search]);
 
   const handleEdit = (id) => {
-    // Redirigir a la página de edición del vale
     router.push(`/pages/admin/accounts/vales/edit/${id}`);
   };
 
   const handleDelete = async (id) => {
-    // Confirmar antes de eliminar
     if (confirm('¿Estás seguro de que quieres eliminar este vale?')) {
       try {
         const response = await fetch(`/api/vales/${id}`, {
@@ -49,7 +46,6 @@ export default function ValesList() {
 
         if (response.ok) {
           alert('Vale eliminado exitosamente');
-          // Actualizar la lista de vales
           setVales(vales.filter((vale) => vale.id !== id));
         } else {
           alert('Error al eliminar el vale');
@@ -61,19 +57,28 @@ export default function ValesList() {
     }
   };
 
-  // Función para obtener el nombre del empleado por ID
   const getEmpleadoNombre = (id) => {
     const empleado = empleados.find((emp) => emp.id === id);
     return empleado ? empleado.nombre : 'Desconocido';
   };
 
-  // Función para obtener el estado formateado
   const getEstadoTexto = (estado) => (estado ? 'Por cuadrar' : 'Cuadrado');
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-4xl p-8 bg-white shadow-md rounded-lg">
         <h2 className="text-2xl font-bold text-center text-gray-800">Lista de Vales</h2>
+        <input
+          type="text"
+          placeholder="Buscar por nombre de empleado"
+          value={search}
+          onChange={handleSearchChange}
+          className="block w-full p-4 mb-4 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
         <table className="min-w-full divide-y divide-gray-200 mt-4">
           <thead className="bg-gray-50">
             <tr>
@@ -89,6 +94,9 @@ export default function ValesList() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Estado
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fecha de Creación
+              </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acciones
               </th>
@@ -101,6 +109,7 @@ export default function ValesList() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vale.descripcion}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{getEmpleadoNombre(vale.empleadoId)}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{getEstadoTexto(vale.estado)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(vale.createdAt).toLocaleDateString()}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => handleEdit(vale.id)}

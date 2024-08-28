@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 export default function TrabajosList() {
   const [trabajos, setTrabajos] = useState([]);
   const [empleados, setEmpleados] = useState([]);
+  const [search, setSearch] = useState('');
   const router = useRouter();
 
   useEffect(() => {
     // Obtener la lista de trabajos y empleados al cargar la página
     const fetchTrabajos = async () => {
       try {
-        const response = await fetch('/api/trabajos');
+        const response = await fetch(`/api/trabajos?nombre=${search}`);
         const data = await response.json();
         setTrabajos(data);
       } catch (error) {
@@ -31,7 +32,11 @@ export default function TrabajosList() {
 
     fetchTrabajos();
     fetchEmpleados();
-  }, []);
+  }, [search]);
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   const handleEdit = (id) => {
     // Redirigir a la página de edición del trabajo
@@ -71,7 +76,7 @@ export default function TrabajosList() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-4xl p-8 bg-white shadow-md rounded-lg overflow-auto">
+      <div className="w-full max-w-6xl p-8 bg-white shadow-md rounded-lg overflow-auto">
         <button
           onClick={() => router.push('/pages/admin/accounts/trabajos')}
           className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -79,6 +84,13 @@ export default function TrabajosList() {
           Volver
         </button>
         <h2 className="text-2xl font-bold text-center text-gray-800">Lista de Trabajos</h2>
+        <input
+          type="text"
+          placeholder="Buscar por nombre"
+          value={search}
+          onChange={handleSearchChange}
+          className="block w-full p-4 mb-4 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
         <table className="min-w-full divide-y divide-gray-200 mt-4">
           <thead className="bg-gray-50">
             <tr>
@@ -92,7 +104,13 @@ export default function TrabajosList() {
                 Empleado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Precio
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Estado
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fecha de Creación
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acciones
@@ -103,14 +121,20 @@ export default function TrabajosList() {
             {trabajos.map((trabajo) => (
               <tr key={trabajo.id}>
                 <td className="px-6 py-4 text-sm text-gray-900">{trabajo.titulo}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                   {trabajo.descripcion}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                   {getEmpleadoNombre(trabajo.empleadoId)}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                  {trabajo.precio}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                   {getEstadoTexto(trabajo.estado)}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                  {new Date(trabajo.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                   <button
@@ -134,4 +158,3 @@ export default function TrabajosList() {
     </div>
   );
 }
-

@@ -29,9 +29,27 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const trabajos = await prisma.trabajo.findMany();
+    const { searchParams } = new URL(request.url);
+    const nombre = searchParams.get('nombre');
+
+    const trabajos = await prisma.trabajo.findMany({
+      where: {
+        empleado: {
+          nombre: {
+            contains: nombre,
+          },
+        },
+      },
+      include: {
+        empleado: true,
+      },
+      orderBy: {
+        createdAt: 'desc', // Ordenar por fecha de creación, más reciente primero
+      },
+    });
+
     return NextResponse.json(trabajos);
   } catch (error) {
     console.error('Error al obtener los trabajos:', error);

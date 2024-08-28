@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET() {
+// api/products/all.js
+export async function GET(request) {
   try {
-    const products = await prisma.product.findMany();
+    const { searchParams } = new URL(request.url);
+    const nombre = searchParams.get('nombre');
+
+    const products = await prisma.product.findMany({
+      where: nombre ? { nombre: { contains: nombre } } : {},
+    });
+
     return NextResponse.json(products);
   } catch (error) {
-    console.error('Error al obtener los empleados:', error);
-    return NextResponse.json({ error: 'Hubo un problema al obtener los empleados' }, { status: 500 });
+    console.error('Error al obtener los productos:', error);
+    return NextResponse.json({ error: 'Hubo un problema al obtener los productos' }, { status: 500 });
   }
 }

@@ -5,12 +5,13 @@ import { useState, useEffect } from 'react';
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState('');
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch('/api/products/all');
+        const res = await fetch(`/api/products/all?nombre=${search}`);
         if (!res.ok) {
           throw new Error('Error al obtener los productos');
         }
@@ -23,7 +24,11 @@ export default function ProductList() {
     }
 
     fetchProducts();
-  }, []);
+  }, [search]);
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -46,6 +51,13 @@ export default function ProductList() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-4xl p-8 space-y-8 bg-white shadow-md rounded-lg">
         <h1 className="text-3xl font-bold text-center text-gray-800">Lista de Productos</h1>
+        <input
+          type="text"
+          placeholder="Buscar por nombre"
+          value={search}
+          onChange={handleSearchChange}
+          className="block w-full p-4 mb-4 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
         {error && <p className="text-red-500 text-center">{error}</p>}
         {products.length === 0 ? (
           <p className="text-center text-gray-500">No hay productos registrados.</p>
@@ -77,7 +89,7 @@ export default function ProductList() {
           </Link>
           <Link href="/pages/admin/products">
             <button className="block w-full p-6 mt-6 text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              Volver 
+              Volver
             </button>
           </Link>
         </div>
