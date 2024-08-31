@@ -26,6 +26,12 @@ export default function EmployeeList() {
   }, []);
 
   const handleDelete = async (id) => {
+    const isConfirmed = confirm('¿Estás seguro de que deseas eliminar este empleado?');
+    
+    if (!isConfirmed) {
+      return;
+    }
+
     try {
       const res = await fetch(`/api/employs/${id}`, {
         method: 'DELETE',
