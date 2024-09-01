@@ -25,3 +25,28 @@ export async function POST(request) {
   }
 }
 
+export async function GET() {
+  try {
+    const empleados = await prisma.employ.findMany({
+      include: {
+        facturas: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    const empleadosConUltimaFactura = empleados.map((empleado) => ({
+      ...empleado,
+      ultimaFactura: empleado.facturas[0] || null,
+    }));
+
+    return NextResponse.json(empleadosConUltimaFactura);
+  } catch (error) {
+    console.error("Error al obtener empleados:", error);
+    return NextResponse.json(
+      { error: "Hubo un problema al obtener los empleados.", details: error.message },
+      { status: 500 }
+    );
+  }
+}

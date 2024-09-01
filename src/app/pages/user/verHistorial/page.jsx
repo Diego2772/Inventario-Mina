@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -39,7 +40,6 @@ export default function ConsumosList() {
     fetchEmpleados();
   }, [search]);
 
-
   const handleDelete = async (id) => {
     if (confirm('¿Estás seguro de que quieres eliminar este consumo?')) {
       try {
@@ -65,13 +65,17 @@ export default function ConsumosList() {
     setEliminando(null); // Restablecer estado de eliminación
   };
 
+  const handleBack = () => {
+    // Redirige a la página anterior
+    router.back();
+  };
 
   const getEmpleadoNombre = (id) => {
     const empleado = empleados.find((emp) => emp.id === id);
     return empleado ? empleado.nombre : 'Desconocido';
   };
 
-  const getEstadoTexto = (estado) => (estado ? 'No cuadrado' : 'Cuadrado'); // Ajusta el texto según tus necesidades
+  const getEstadoTexto = (estado) => (estado === 'true' ? 'Cuadrado' : 'Por cuadrar'); // Ajusta el texto según tus necesidades
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -98,9 +102,17 @@ export default function ConsumosList() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-4xl p-8 bg-white shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold text-center text-gray-800">Lista de Consumos</h2>
+        <div className="flex justify-between items-center mb-6">
+          <button
+            onClick={handleBack}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Volver
+          </button>
+          <h2 className="text-2xl font-bold text-center text-gray-800">Lista de Consumos</h2>
+        </div>
         <input
           type="text"
           placeholder="Buscar por nombre de empleado"

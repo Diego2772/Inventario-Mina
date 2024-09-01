@@ -72,7 +72,7 @@ export default function TrabajosList() {
   };
 
   // Función para obtener el estado formateado
-  const getEstadoTexto = (estado) => (estado ? 'Por cuadrar' : 'Cuadrado');
+  const getEstadoTexto = (estado) => (estado === 'true' ? 'Cuadrado' : 'Por cuadrar');
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
