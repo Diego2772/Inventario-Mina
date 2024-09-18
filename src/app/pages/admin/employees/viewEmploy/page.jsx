@@ -11,7 +11,7 @@ export default function EmployeeList() {
   useEffect(() => {
     async function fetchEmployees() {
       try {
-        const res = await fetch(`/api/employs/all?nombre=${search}`);
+        const res = await fetch(`https://inventario-mina.vercel.app/api/employs/all?nombre=${search}`);
         if (!res.ok) {
           throw new Error('Error al obtener los empleados');
         }
@@ -38,7 +38,7 @@ export default function EmployeeList() {
     }
 
     try {
-      const res = await fetch(`/api/employs/${id}`, {
+      const res = await fetch(`https://inventario-mina.vercel.app/api/employs/${id}`, {
         method: 'DELETE',
       });
 
